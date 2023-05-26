@@ -6,12 +6,11 @@ import 'package:rxdart/rxdart.dart';
 
 abstract class Atom<T> {
   Stream<T> get stream;
-  void call(T value);
 
   final Map<AtomCallback<T>, StreamSubscription<T>> _atomSubscriptions = {};
   final _subscriptions = CompositeSubscription();
 
-  void listenAtom(
+  void addListener(
     AtomCallback<T> listener, {
     AtomListenerModifier<T>? modifier,
     Function? onError,
@@ -32,7 +31,7 @@ abstract class Atom<T> {
     _atomSubscriptions[listener] = subscription;
   }
 
-  void removeAtomListener(AtomCallback<T> listener) {
+  void removeListener(AtomCallback<T> listener) {
     final subscription = _atomSubscriptions.remove(listener);
     subscription?.cancel();
   }

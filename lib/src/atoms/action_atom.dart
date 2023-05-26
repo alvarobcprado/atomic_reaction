@@ -12,7 +12,6 @@ final class ActionAtom<T> extends Atom<T> {
   @override
   Stream<T> get stream => _subject.stream;
 
-  @override
   void call(T value) {
     _subject.add(value);
   }
