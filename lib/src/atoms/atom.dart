@@ -6,8 +6,8 @@ import 'package:rxdart/rxdart.dart';
 part './action_atom.dart';
 part './state_atom.dart';
 
-abstract class Atom<T> extends StreamView<T> {
-  Atom(this._subject) : super(_subject);
+abstract class Atom<T> {
+  const Atom(this._subject);
 
   final Subject<T> _subject;
 
