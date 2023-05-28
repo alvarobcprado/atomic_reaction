@@ -1,46 +1,17 @@
 import 'dart:async';
 
-import 'package:atomic_reaction/src/utils/typedefs.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:atomic_reaction/src/utils/listener_mixin.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class Atom<T> {
-  Stream<T> get stream;
+part './action_atom.dart';
+part './state_atom.dart';
 
-  final Map<AtomCallback<T>, StreamSubscription<T>> _atomSubscriptions = {};
-  final _subscriptions = CompositeSubscription();
+abstract class Atom<T> extends StreamView<T> {
+  Atom(this._subject) : super(_subject);
 
-  void addListener(
-    AtomCallback<T> listener, {
-    AtomListenerModifier<T>? modifier,
-    Function? onError,
-    void Function()? onDone,
-    bool cancelOnError = false,
-  }) {
-    final listenerModifier = modifier ?? (listener) => listener;
+  final Subject<T> _subject;
 
-    final subscription = _subscriptions.add(
-      listenerModifier(stream).listen(
-        listener,
-        onError: onError,
-        onDone: onDone,
-        cancelOnError: cancelOnError,
-      ),
-    );
+  Stream<T> get stream => _subject;
 
-    _atomSubscriptions[listener] = subscription;
-  }
-
-  void removeListener(AtomCallback<T> listener) {
-    final subscription = _atomSubscriptions.remove(listener);
-    subscription?.cancel();
-  }
-
-  @mustCallSuper
-  void dispose() {
-    for (final subscription in _atomSubscriptions.values) {
-      subscription.cancel();
-    }
-    _subscriptions.dispose();
-  }
+  void dispose();
 }
