@@ -14,6 +14,10 @@ final class StateAtom<T> extends Atom<T> with TypeAtomListenerMixin<T> {
 
   T get value => _stateSubject.value;
 
+  T? get valueOrNull => _stateSubject.valueOrNull;
+
+  bool get hasValue => _stateSubject.hasValue;
+
   @override
   void dispose() {
     _subject.close();
