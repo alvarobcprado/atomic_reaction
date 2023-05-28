@@ -64,3 +64,30 @@ class _ActionBondState<T> extends State<ActionBond<T>> {
     return widget.child;
   }
 }
+
+class ActionStateBond<S, A> extends StatelessWidget {
+  const ActionStateBond({
+    Key? key,
+    required this.stateAtom,
+    required this.actionAtom,
+    required this.onAction,
+    required this.builder,
+  }) : super(key: key);
+
+  final StateAtom<S> stateAtom;
+  final ActionAtom<A> actionAtom;
+  final void Function(A action) onAction;
+  final Widget Function(BuildContext context, S value) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return ActionBond<A>(
+      atom: actionAtom,
+      onAction: onAction,
+      child: StateBond<S>(
+        atom: stateAtom,
+        builder: builder,
+      ),
+    );
+  }
+}

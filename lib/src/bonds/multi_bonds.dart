@@ -66,3 +66,28 @@ class _ActionMoleculeBondState<T extends Molecule>
     return widget.child;
   }
 }
+
+class ActionStateMoleculeBond<T extends Molecule> extends StatelessWidget {
+  const ActionStateMoleculeBond({
+    Key? key,
+    required this.molecule,
+    required this.onAction,
+    required this.builder,
+  }) : super(key: key);
+
+  final T molecule;
+  final void Function(dynamic action) onAction;
+  final Widget Function(BuildContext context) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return ActionMoleculeBond(
+      onAction: onAction,
+      molecule: molecule,
+      child: StateMoleculeBond(
+        molecule: molecule,
+        builder: builder,
+      ),
+    );
+  }
+}
