@@ -32,69 +32,89 @@ class MyHomePage extends StatefulWidget {
 
 class CounterMolecule extends Molecule {
   CounterMolecule() {
-    incrementAtom.addListener((_) {
-      counterAtom.value++;
+    on(incrementEvent, (_) => counterState.value++);
+    on(decrementEvent, (_) => counterState.value--);
+    on(resetEvent, (_) {
+      counterState.value = 0;
+      showSnackBarAction('Counter reseted');
     });
   }
 
-  final counterAtom = StateAtom<int>(0);
-  final incrementAtom = ActionVoidAtom();
+  final counterState = StateAtom<int>(0);
+  final incrementEvent = EventVoidAtom();
+  final decrementEvent = EventVoidAtom();
+  final resetEvent = EventVoidAtom();
+  final showSnackBarAction = ActionAtom<String>();
 
   @override
-  List<Atom> get atoms => [counterAtom, incrementAtom, inverseCounterAtom];
+  List<Atom> get atoms => [
+        counterState,
+        incrementEvent,
+        decrementEvent,
+        resetEvent,
+      ];
 }
-
-final inverseCounterAtom = StateAtom<int>(0);
-final decrementAtom = ActionVoidAtom()
-  ..addListener((_) {
-    inverseCounterAtom.value--;
-  });
 
 class _MyHomePageState extends State<MyHomePage> {
   final counterMolecule = CounterMolecule();
   void _incrementCounter() {
-    counterMolecule.incrementAtom();
-    decrementAtom();
+    counterMolecule.incrementEvent();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            StateBond(
-              atom: counterMolecule.counterAtom,
-              builder: (_, value) => Text(
-                '$value',
-                style: Theme.of(context).textTheme.headlineMedium,
+    return ActionBond(
+      atom: counterMolecule.showSnackBarAction,
+      onAction: (snackBarText) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(snackBarText)),
+        );
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'You have pushed the button this many times:',
               ),
-            ),
-            const Text(
-              'Inverse:',
-            ),
-            StateBond(
-              atom: inverseCounterAtom,
-              builder: (_, value) => Text(
-                '$value',
-                style: Theme.of(context).textTheme.headlineMedium,
+              StateBond(
+                atom: counterMolecule.counterState,
+                builder: (_, value) => Text(
+                  '$value',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
               ),
+            ],
+          ),
+        ),
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FloatingActionButton(
+              onPressed: _incrementCounter,
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+            ),
+            const SizedBox(width: 8),
+            FloatingActionButton(
+              onPressed: counterMolecule.decrementEvent,
+              tooltip: 'Decrement',
+              child: const Icon(Icons.remove),
+            ),
+            const SizedBox(width: 8),
+            FloatingActionButton(
+              onPressed: counterMolecule.resetEvent,
+              tooltip: 'Reset',
+              child: const Icon(Icons.refresh),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:atomic_reaction/src/utils/listener_mixin.dart';
 import 'package:rxdart/rxdart.dart';
 
 part './action_atom.dart';
+part './event_atom.dart';
 part './state_atom.dart';
 
 /// {@template atom}
