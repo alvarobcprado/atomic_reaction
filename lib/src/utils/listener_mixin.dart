@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:atomic_reaction/atomic_reaction.dart';
+import 'package:atomic_reaction/src/utils/listener_mapper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -15,21 +16,19 @@ mixin TypeAtomListenerMixin<T> on Atom<T> {
   /// Adds a callback that will be called whenever the [Atom] changes.
   /// {@endtemplate}
   void addListener(
-    AtomCallback<T> listener, {
+    AtomAsyncCallback<T> listener, {
     AtomListenerModifier<T>? modifier,
     Function? onError,
     void Function()? onDone,
     bool cancelOnError = false,
   }) {
-    final listenerModifier = modifier ?? (listener) => listener;
+    final listenerModifier = modifier ?? ListenerModifiers.defaultModifier<T>();
 
     _atomSubscriptions[listener] = _subscriptions.add(
-      listenerModifier(stream).listen(
-        listener,
-        onError: onError,
-        onDone: onDone,
-        cancelOnError: cancelOnError,
-      ),
+      listenerModifier(
+        stream,
+        ListenerMappers.defaultMapper(listener),
+      ).listen(null),
     );
   }
 

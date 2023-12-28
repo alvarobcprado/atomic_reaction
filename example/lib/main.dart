@@ -34,10 +34,14 @@ class CounterMolecule extends Molecule {
   CounterMolecule() {
     on(incrementEvent, (_) => counterState.value++);
     on(decrementEvent, (_) => counterState.value--);
-    on(resetEvent, (_) {
-      counterState.value = 0;
-      showSnackBarAction('Counter reseted');
-    });
+    on(
+      resetEvent,
+      (_) {
+        counterState.value = 0;
+        showSnackBarAction('Counter reseted');
+      },
+      modifier: ListenerModifiers.debounceTime(const Duration(seconds: 1)),
+    );
   }
 
   final counterState = StateAtom<int>(0);
@@ -52,6 +56,7 @@ class CounterMolecule extends Molecule {
         incrementEvent,
         decrementEvent,
         resetEvent,
+        showSnackBarAction,
       ];
 }
 
