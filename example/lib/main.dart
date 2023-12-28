@@ -32,21 +32,21 @@ class MyHomePage extends StatefulWidget {
 
 class CounterMolecule extends Molecule {
   CounterMolecule() {
-    incrementAtom.addListener(() {
+    incrementAtom.addListener((_) {
       counterAtom.value++;
     });
   }
 
   final counterAtom = StateAtom<int>(0);
-  final incrementAtom = VoidActionAtom();
+  final incrementAtom = ActionVoidAtom();
 
   @override
   List<Atom> get atoms => [counterAtom, incrementAtom, inverseCounterAtom];
 }
 
 final inverseCounterAtom = StateAtom<int>(0);
-final decrementAtom = VoidActionAtom()
-  ..addListener(() {
+final decrementAtom = ActionVoidAtom()
+  ..addListener((_) {
     inverseCounterAtom.value--;
   });
 

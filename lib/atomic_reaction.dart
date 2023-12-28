@@ -1,3 +1,4 @@
+/// Atomic Reaction is a library for creating and managing atomic state.
 library atomic_reaction;
 
 export 'src/atoms/atom.dart';

@@ -4,40 +4,81 @@ import 'package:atomic_reaction/atomic_reaction.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// {@template state_molecule_bond}
+/// A [StateMoleculeBond] is a widget that listens to changes on any [StateAtom]
+/// in a [Molecule] and rebuilds whenever any of the [StateAtom]s change.
+///
+/// The rebuild can be limited to a specific [StateAtom] by using the [selector]
+/// parameter to specify the [StateAtom]s to listen to.
+/// {@endtemplate}
 class StateMoleculeBond<T extends Molecule> extends StatelessWidget {
+  /// {@macro state_molecule_bond}
   const StateMoleculeBond({
     required this.molecule,
     required this.builder,
+    this.selector,
     super.key,
   });
 
+  /// The [Molecule] to listen to.
   final T molecule;
-  final WidgetBuilder builder;
+
+  /// The Builder to use to build the widget.
+  final BondBuilder<dynamic> builder;
+
+  /// The [StateAtom]s selector to listen to.
+  final AtomSelector<StateAtom<dynamic>>? selector;
+
+  Stream<dynamic> _getStream() {
+    final atoms = molecule.atoms.whereType<StateAtom<dynamic>>().toList();
+    if (selector != null) {
+      return Rx.merge(selector!(atoms).map((e) => e.stream));
+    }
+    return Rx.merge(atoms.map((e) => e.stream));
+  }
 
   @override
   Widget build(BuildContext context) {
+    final stream = _getStream();
     return StreamBuilder<dynamic>(
-      stream: const Stream.empty().mergeWith(
-        molecule.atoms.whereType<StateAtom>().map((e) => e.stream),
-      ),
+      stream: stream,
       builder: (context, snapshot) {
-        return builder(context);
+        final currentValue = snapshot.data;
+        return builder(context, currentValue);
       },
     );
   }
 }
 
+/// {@template action_molecule_bond}
+/// An [ActionMoleculeBond] is a widget that listens to changes on any
+/// [ActionAtom] in a [Molecule] and calls a callback whenever any of the
+/// [ActionAtom]s change.
+///
+/// The callback can be limited to a specific [ActionAtom] by using the
+/// [selector] parameter to specify the [ActionAtom]s to listen to.
+/// {@endtemplate}
 class ActionMoleculeBond<T extends Molecule> extends StatefulWidget {
+  /// {@macro action_molecule_bond}
   const ActionMoleculeBond({
     required this.molecule,
     required this.onAction,
     required this.child,
+    this.selector,
     super.key,
   });
 
+  /// The [Molecule] to listen to.
   final T molecule;
-  final void Function(dynamic action) onAction;
+
+  /// The callback to call whenever the [ActionAtom] changes.
+  final AtomCallback<dynamic> onAction;
+
+  /// The child widget to build.
   final Widget child;
+
+  /// The [ActionAtom]s selector to listen to.
+  final AtomSelector<ActionAtom<dynamic>>? selector;
 
   @override
   State<ActionMoleculeBond<T>> createState() => _ActionMoleculeBondState<T>();
@@ -45,19 +86,24 @@ class ActionMoleculeBond<T extends Molecule> extends StatefulWidget {
 
 class _ActionMoleculeBondState<T extends Molecule>
     extends State<ActionMoleculeBond<T>> {
+  List<ActionAtom<dynamic>> _getAtoms() {
+    final atoms =
+        widget.molecule.atoms.whereType<ActionAtom<dynamic>>().toList();
+    if (widget.selector != null) {
+      return widget.selector!(atoms);
+    }
+    return atoms;
+  }
+
   @override
   void initState() {
     super.initState();
-    widget.molecule.atoms
-        .whereType<ActionAtom>()
-        .map((e) => e.addListener(widget.onAction));
+    _getAtoms().forEach((e) => e.addListener(widget.onAction));
   }
 
   @override
   void dispose() {
-    widget.molecule.atoms
-        .whereType<ActionAtom>()
-        .forEach((e) => e.removeListener(widget.onAction));
+    _getAtoms().forEach((e) => e.removeListener(widget.onAction));
     super.dispose();
   }
 
@@ -67,26 +113,55 @@ class _ActionMoleculeBondState<T extends Molecule>
   }
 }
 
+/// {@template action_state_molecule_bond}
+/// An [ActionStateMoleculeBond] is a widget that listens to changes on any
+/// [ActionAtom] or [StateAtom] in a [Molecule] and calls a callback whenever
+/// any of the [ActionAtom]s change and rebuilds whenever any of the [StateAtom]
+/// change.
+///
+/// The callback can be limited to a specific [ActionAtom] by using the
+/// [actionSelector] parameter to specify the [ActionAtom]s to listen to.
+///
+/// The rebuild can be limited to a specific [StateAtom] by using the
+/// [stateSelector] parameter to specify the [StateAtom]s to listen to.
+/// {@endtemplate}
+/// {@endtemplate}
 class ActionStateMoleculeBond<T extends Molecule> extends StatelessWidget {
+  /// {@macro action_state_molecule_bond}
   const ActionStateMoleculeBond({
-    Key? key,
     required this.molecule,
     required this.onAction,
     required this.builder,
-  }) : super(key: key);
+    this.actionSelector,
+    this.stateSelector,
+    super.key,
+  });
 
+  /// The [Molecule] to listen to.
   final T molecule;
-  final void Function(dynamic action) onAction;
-  final Widget Function(BuildContext context) builder;
+
+  /// The callback to call whenever the [ActionAtom] changes.
+  final AtomCallback<dynamic> onAction;
+
+  /// The Builder to use to build the widget.
+  final BondBuilder<dynamic> builder;
+
+  /// The [ActionAtom]s selector to listen to.
+  final AtomSelector<ActionAtom<dynamic>>? actionSelector;
+
+  /// The [StateAtom]s selector to listen to.
+  final AtomSelector<StateAtom<dynamic>>? stateSelector;
 
   @override
   Widget build(BuildContext context) {
     return ActionMoleculeBond(
       onAction: onAction,
       molecule: molecule,
+      selector: actionSelector,
       child: StateMoleculeBond(
         molecule: molecule,
         builder: builder,
+        selector: stateSelector,
       ),
     );
   }

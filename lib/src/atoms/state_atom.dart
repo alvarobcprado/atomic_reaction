@@ -1,22 +1,31 @@
 part of './atom.dart';
 
-/// An [StateAtom] is the smallest unit of state in the application.
+/// {@template state_atom}
+/// A [StateAtom] is the smallest unit of state with type [S] in the
+/// application.
 /// It is a simple wrapper around a [BehaviorSubject] that allows
-/// you to get and set the value of the [StateAtom] and listen to changes.
-final class StateAtom<T> extends Atom<T> with TypeAtomListenerMixin<T> {
-  StateAtom(T value) : super(BehaviorSubject<T>.seeded(value));
+/// you to get and set the value [S] of the [StateAtom] and listen to changes.
+/// {@endtemplate}
+final class StateAtom<S> extends Atom<S> with TypeAtomListenerMixin<S> {
+  /// {@macro state_atom}
+  StateAtom(S value) : super(BehaviorSubject<S>.seeded(value));
 
-  BehaviorSubject<T> get _stateSubject => _subject as BehaviorSubject<T>;
+  BehaviorSubject<S> get _stateSubject => _subject as BehaviorSubject<S>;
 
-  set value(T value) {
+  /// Sets the value of the state atom.
+  ///
+  /// Updates the value of the state atom and notifies any subscribers.
+  ///
+  /// Usage:
+  /// ```dart
+  /// stateAtom.value = newValue;
+  /// ```
+  set value(S value) {
     _stateSubject.add(value);
   }
 
-  T get value => _stateSubject.value;
-
-  T? get valueOrNull => _stateSubject.valueOrNull;
-
-  bool get hasValue => _stateSubject.hasValue;
+  /// Returns the current value of the state atom.
+  S get value => _stateSubject.value;
 
   @override
   void dispose() {
