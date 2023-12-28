@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:atomic_reaction/src/utils/listener_mixin.dart';
+import 'package:atomic_reaction/src/listener/listener_mixin.dart';
 import 'package:rxdart/rxdart.dart';
 
 part './action_atom.dart';

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:atomic_reaction/atomic_reaction.dart';
-import 'package:atomic_reaction/src/utils/listener_mapper.dart';
+import 'package:atomic_reaction/src/listener/listener_mapper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
