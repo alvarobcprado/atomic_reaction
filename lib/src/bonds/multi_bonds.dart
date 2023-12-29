@@ -125,7 +125,6 @@ class _ActionMoleculeBondState<T extends Molecule>
 /// The rebuild can be limited to a specific [StateAtom] by using the
 /// [stateSelector] parameter to specify the [StateAtom]s to listen to.
 /// {@endtemplate}
-/// {@endtemplate}
 class ActionStateMoleculeBond<T extends Molecule> extends StatelessWidget {
   /// {@macro action_state_molecule_bond}
   const ActionStateMoleculeBond({
