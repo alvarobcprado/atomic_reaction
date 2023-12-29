@@ -58,6 +58,47 @@ void main() {
     });
   });
 
+  group('EventVoidAtom', () {
+    late EventVoidAtom eventAtom;
+
+    setUp(() {
+      eventAtom = EventVoidAtom();
+    });
+
+    tearDown(() {
+      eventAtom.dispose();
+    });
+
+    test('should notify subscribers', () {
+      final values = <int>[];
+      eventAtom.call();
+
+      expect(eventAtom.stream, emitsInOrder(values));
+    });
+
+    test('should dispose the atom', () {
+      final expected = [emitsDone];
+      eventAtom.dispose();
+      expect(eventAtom.isClosed, true);
+      expectLater(eventAtom.stream, emitsInOrder(expected));
+    });
+
+    test('is broadcast atom', () {
+      final expected = <void>[];
+      expect(eventAtom.stream.isBroadcast, true);
+      expectLater(eventAtom.stream, emitsInOrder(expected));
+      expectLater(eventAtom.stream, emitsInOrder(expected));
+      expectLater(eventAtom.stream, emitsInOrder(expected));
+
+      eventAtom.call();
+    });
+
+    test('throws StateError when update value after dispose', () {
+      eventAtom.dispose();
+      expect(() => eventAtom.call(), throwsStateError);
+    });
+  });
+
   group('EventAtom listener', () {
     late EventAtom<int> eventAtom;
 
