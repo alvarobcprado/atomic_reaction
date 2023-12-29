@@ -1,6 +1,6 @@
 name: atomic_reaction
 description: A library that helps implement reactive programming with the power of Dart Stream extended by the capabilities provided by the RxDart library.
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/alvarobcprado/atomic_reaction
 issue_tracker: https://github.com/alvarobcprado/atomic_reaction/issues
 homepage: https://github.com/alvarobcprado/atomic_reaction
