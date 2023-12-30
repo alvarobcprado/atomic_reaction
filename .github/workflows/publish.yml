@@ -20,4 +20,4 @@ jobs:
       - name: Update flutter dependencies
         run: flutter pub get
       - name: Publish
-        run: dart pub publish
+        run: dart pub publish --force
