@@ -132,14 +132,14 @@ void main() {
         ..addListener(
           actual.add,
           modifier: ListenerModifiers.debounceTime(
-            const Duration(milliseconds: 10),
+            const Duration(milliseconds: 5),
           ),
         )
         ..value = 1
         ..value = 2
         ..value = 3;
 
-      await TestUtils.futureDelay(20);
+      await TestUtils.futureDelay(30);
 
       expect(actual, expected);
     });

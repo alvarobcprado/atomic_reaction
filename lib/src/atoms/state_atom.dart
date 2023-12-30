@@ -6,7 +6,7 @@ part of './atom.dart';
 /// It is a simple wrapper around a [BehaviorSubject] that allows
 /// you to get and set the value [S] of the [StateAtom] and listen to changes.
 /// {@endtemplate}
-final class StateAtom<S> extends Atom<S> with TypeAtomListenerMixin<S> {
+class StateAtom<S> extends Atom<S> with TypeAtomListenerMixin<S> {
   /// {@macro state_atom}
   StateAtom(this._state) : super(PublishSubject<S>());
 

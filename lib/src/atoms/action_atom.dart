@@ -6,7 +6,7 @@ part of './atom.dart';
 /// It is a simple wrapper around a [PublishSubject] that allows
 /// you to call the [ActionAtom] and listen to the result.
 /// {@endtemplate}
-final class ActionAtom<A> extends Atom<A> with TypeAtomListenerMixin<A> {
+class ActionAtom<A> extends Atom<A> with TypeAtomListenerMixin<A> {
   /// {@macro action_atom}
   ActionAtom() : super(PublishSubject<A>());
 
