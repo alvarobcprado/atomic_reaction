@@ -1,4 +1,11 @@
-# Atomic Reaction - Flutter Package
+<div style="text-align: center; font-family: times new roman">
+<h1>Atomic Reaction</h1>
+  <a href="https://pub.dev/packages/atomic_reaction"><img src="https://img.shields.io/pub/v/atomic_reaction.svg" alt="Pub.dev Badge"></a>
+	<a href="https://github.com/alvarobcprado/atomic_reaction/actions"><img src="https://github.com/alvarobcprado/atomic_reaction/actions/workflows/test.yml/badge.svg" alt="GitHub Build Badge"></a>
+	<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="MIT License Badge"></a>
+  <a href="https://pub.dev/packages/very_good_analysis"><img src="https://img.shields.io/badge/style-very_good_analysis-B22C89.svg" alt="Very Good Analysis Style Badge"></a>
+
+</div>
 
 **Atomic Reaction** is a state management library for Flutter that utilizes the atomic design principle to create modular and scalable state management solutions. It's designed to provide a clear structure for managing state, events, and actions within your Flutter applications.
 
