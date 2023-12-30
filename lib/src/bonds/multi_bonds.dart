@@ -24,7 +24,7 @@ class StateMoleculeBond<T extends Molecule> extends StatelessWidget {
   final T molecule;
 
   /// The Builder to use to build the widget.
-  final BondBuilder<dynamic> builder;
+  final WidgetBuilder builder;
 
   /// The [StateAtom]s selector to listen to.
   final AtomSelector<StateAtom<dynamic>>? selector;
@@ -43,8 +43,7 @@ class StateMoleculeBond<T extends Molecule> extends StatelessWidget {
     return StreamBuilder<dynamic>(
       stream: stream,
       builder: (context, snapshot) {
-        final currentValue = snapshot.data;
-        return builder(context, currentValue);
+        return builder(context);
       },
     );
   }
@@ -72,7 +71,7 @@ class ActionMoleculeBond<T extends Molecule> extends StatefulWidget {
   final T molecule;
 
   /// The callback to call whenever the [ActionAtom] changes.
-  final AtomCallback<dynamic> onAction;
+  final VoidCallback onAction;
 
   /// The child widget to build.
   final Widget child;
@@ -86,24 +85,30 @@ class ActionMoleculeBond<T extends Molecule> extends StatefulWidget {
 
 class _ActionMoleculeBondState<T extends Molecule>
     extends State<ActionMoleculeBond<T>> {
-  List<ActionAtom<dynamic>> _getAtoms() {
-    final atoms =
-        widget.molecule.atoms.whereType<ActionAtom<dynamic>>().toList();
+  late StreamSubscription<dynamic> _subscription;
+
+  Stream<dynamic> _getStream() {
+    final availableAtoms = widget.molecule.atoms;
+    final atoms = availableAtoms.whereType<ActionAtom<dynamic>>().toList();
     if (widget.selector != null) {
-      return widget.selector!(atoms);
+      return Rx.merge(widget.selector!(atoms).map((e) => e.stream));
     }
-    return atoms;
+    return Rx.merge(atoms.map((e) => e.stream));
+  }
+
+  void _onAction(dynamic _) {
+    widget.onAction();
   }
 
   @override
   void initState() {
     super.initState();
-    _getAtoms().forEach((e) => e.addListener(widget.onAction));
+    _subscription = _getStream().listen(_onAction);
   }
 
   @override
   void dispose() {
-    _getAtoms().forEach((e) => e.removeListener(widget.onAction));
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -140,10 +145,10 @@ class ActionStateMoleculeBond<T extends Molecule> extends StatelessWidget {
   final T molecule;
 
   /// The callback to call whenever the [ActionAtom] changes.
-  final AtomCallback<dynamic> onAction;
+  final VoidCallback onAction;
 
   /// The Builder to use to build the widget.
-  final BondBuilder<dynamic> builder;
+  final WidgetBuilder builder;
 
   /// The [ActionAtom]s selector to listen to.
   final AtomSelector<ActionAtom<dynamic>>? actionSelector;
