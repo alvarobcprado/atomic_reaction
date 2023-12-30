@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:atomic_reaction/src/listener/listener_mixin.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
 part './action_atom.dart';
@@ -23,6 +24,12 @@ abstract class Atom<T> {
   /// The stream of values emitted by the atom.
   Stream<T> get stream => _subject;
 
+  /// Whether the atom is closed.
+  bool get isClosed => _subject.isClosed;
+
   /// Disposes the atom, releasing any resources associated with it.
-  void dispose();
+  @mustCallSuper
+  void dispose() {
+    _subject.close();
+  }
 }

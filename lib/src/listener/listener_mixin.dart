@@ -48,5 +48,6 @@ mixin TypeAtomListenerMixin<T> on Atom<T> {
       subscription.cancel();
     }
     _subscriptions.dispose();
+    super.dispose();
   }
 }

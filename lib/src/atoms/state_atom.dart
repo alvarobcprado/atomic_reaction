@@ -8,9 +8,11 @@ part of './atom.dart';
 /// {@endtemplate}
 final class StateAtom<S> extends Atom<S> with TypeAtomListenerMixin<S> {
   /// {@macro state_atom}
-  StateAtom(S value) : super(BehaviorSubject<S>.seeded(value));
+  StateAtom(this._state) : super(PublishSubject<S>());
 
-  BehaviorSubject<S> get _stateSubject => _subject as BehaviorSubject<S>;
+  PublishSubject<S> get _stateSubject => _subject as PublishSubject<S>;
+
+  S _state;
 
   /// Sets the value of the state atom.
   ///
@@ -22,14 +24,9 @@ final class StateAtom<S> extends Atom<S> with TypeAtomListenerMixin<S> {
   /// ```
   set value(S value) {
     _stateSubject.add(value);
+    _state = value;
   }
 
   /// Returns the current value of the state atom.
-  S get value => _stateSubject.value;
-
-  @override
-  void dispose() {
-    _subject.close();
-    super.dispose();
-  }
+  S get value => _state;
 }
